@@ -23,5 +23,7 @@ def provider_symptoms(cloud_url, request):
         data = {'identity': patient_id, 'symptoms': json_list_data}
         response = requests.post(url, json=data)
         symptoms_id_list = json.loads(response.json())
-        id_list_data = json.dumps(symptoms_id_list)
-        return jsonify(id_list_data)
+        print("LIST", symptoms_id_list)
+        # id_list_data = json.dumps(symptoms_id_list)
+        # return jsonify(id_list_data)
+        return(symptoms_id_list)

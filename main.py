@@ -2,8 +2,8 @@ import config
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, session, g
 from flask_jwt_extended import JWTManager, jwt_required
-# import requests, json
-import argparse
+
+import argparse, requests, json
 
 from symptoms_form import symptoms, provider_symptoms
 
@@ -33,7 +33,26 @@ def symptoms_form():
 @app.route('/care_provider_symptoms', methods=['POST'])
 @jwt_required()
 def care_provider_symptoms_form():
-    return provider_symptoms(cloud_url, request)
+    try:
+        id_list_data = provider_symptoms(cloud_url, request)
+    except:
+        return
+    patient_id = request.json.get('inputValue')
+    symptoms_id = id_list_data
+    event_url = get_event_server()
+    event_url = event_url['url']
+    event_url = f'{event_url}/event-patient-symptoms'
+    print("ID", symptoms_id)
+    data = {'patient_id': patient_id, 'symptoms_id': symptoms_id}
+    event_response = requests.post(event_url, json=data)
+    id_list_data = json.dumps(id_list_data)
+    return jsonify(id_list_data)
+    # return(id_list_data)
+
+def get_event_server():
+    event_url = f'{cloud_url}/event_server'
+    response = requests.get(event_url)
+    return response.json()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
