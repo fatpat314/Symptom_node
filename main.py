@@ -2,14 +2,18 @@ import config
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, session, g
 from flask_jwt_extended import JWTManager, jwt_required
+from flask_cors import CORS
 
 import argparse, requests, json
 
 from symptoms_form import symptoms, provider_symptoms
 
 app = Flask(__name__)
+CORS(app)
+
 app.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY # change this to a random string in production
-cloud_url = "http://localhost:6000"
+cloud_url = "http://localhost:8010"
+# cloud_url = "https://cognitive-network-manager-rdwl5upzra-uw.a.run.app"
 jwt = JWTManager(app)
 load_dotenv()
 
@@ -22,7 +26,7 @@ class Symptom:
 @app.route('/', methods = ['GET'])
 def home():
     if(request.method == 'GET'):
-        data = "hello Class!"
+        data = "Symptoms Node"
         return jsonify({'data': data})
 
 @app.route('/symptoms', methods = ['POST'])
